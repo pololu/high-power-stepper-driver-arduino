@@ -39,8 +39,12 @@ public:
     uint16_t readReg(uint8_t address)
     {
         selectChip();
+
         uint16_t dataOut = transfer((0x8 | address) << 12);
         deselectChip();
+        // Mask off read/write bit
+        dataOut = dataOut & 0x0FFF;
+        // 
         return dataOut;
     }
 
@@ -112,23 +116,23 @@ public:
         STATUS = 0x07,
     };
 
-	/*! Possible arguments to setGain(). */
-	enum isgain
-	{
-		Gain5 = 5,
-		Gain10 = 10,
-		Gain20 = 20,
-		Gain40 = 40,
-	};
+  	/*! Possible arguments to setGain(). */
+  	enum isgain
+  	{
+  		Gain5 = 5,
+  		Gain10 = 10,
+  		Gain20 = 20,
+  		Gain40 = 40,
+  	};
 
-	/*! Possible arguments to setDeadTime(). */
-	enum deadTime
-	{
-		DeadTime400ns = 400,
-		DeadTime450ns = 450,
-		DeadTime650ns = 650,
-		DeadTime850ns = 850,
-	};
+  	/*! Possible arguments to setDeadTime(). */
+  	enum deadTime
+  	{
+  		DeadTime400ns = 400,
+  		DeadTime450ns = 450,
+  		DeadTime650ns = 650,
+  		DeadTime850ns = 850,
+  	};
 
     /*! Possible arguments to setStepMode(). */
     enum stepMode
@@ -142,6 +146,36 @@ public:
         MicroStep4 = 4,
         MicroStep2 = 2,
         MicroStep1 = 1,
+    };
+
+    /*! Possible arguments to setDecayMode(). */
+    //
+    //
+    //
+    enum setDecayMode
+    {
+      Slow = 0b000,
+      SlowIncreaseMixedDecrease = 0b001,
+      Fast = 0b010,
+      Mixed = 0b011,
+      SlowIncreaseAutoMixedDecrease = 0b100,
+      AutoMixed = 0b101,
+    };
+
+    /*! Possible arguments to checkErrorStatus(). */
+    //
+    //
+    //
+    enum errorType
+    {
+      overTemp = 0b000,
+      aOverCurrent = 0b001,
+      bOverCurrent = 0b010,
+      aPreDriver = 0b011,
+      bPreDriver = 0b100,
+      underVoltageLockout = 0b101,
+      stallDetected = 0b110,
+      latchedStallDetected = 0b111,
     };
 
     /*! Configures this object to use the specified pin as a slave select pin.
@@ -232,7 +266,7 @@ public:
 		writeCTRL();
 	}
 
-	/*! Sets ISGAIN bit to a gain of: 5, 10, 20, or 40. */
+	/*! Sets isgain bit to a gain of: 5, 10, 20, or 40. */
 	void setGain(uint8_t gain)
 	{
 		// Pick gain of 20 by default.
@@ -264,7 +298,7 @@ public:
 		case DeadTime850ns: dt = 0b11; break;
 		}
 
-		ctrl = (ctrl & 0b110011111111) | (dt << 10);
+		ctrl = (ctrl & 0b001111111111) | (dt << 10);
 		writeCTRL();
 	}
 
@@ -292,6 +326,180 @@ public:
 		off = off ^ (1 << 8);
 		writeOFF();
 	}
+
+  /* Sets current trip blanking time, in increments of 20 ns */
+  //
+  //
+  //
+  void setBlankingTime(uint8_t tBlank)
+  {
+    blank = ((blank&0b100000000) | tBlank);
+    writeBLANK();
+  }
+
+  /* Disable adaptive blanking time */
+  //
+  //
+  //
+  void disableAdaptiveBlankingTime()
+  {
+    blank = (blank & 0b011111111);
+    writeBLANK();
+  }
+
+  /* Enable adaptive blanking time */
+  //
+  //
+  //
+  void enableAdaptiveBlankingTime()
+  {
+    blank = (blank  | 0b100000000);
+    writeBLANK();
+  }
+
+  /* setDecayMode */
+  //
+  //
+  //
+  void setDecayMode(uint8_t mode)
+  {
+    // Pick a default decay mode of slow decay for increasing currents, mixed decay for decreasing currents
+    uint16_t dm = 0b001;
+
+		switch(mode)
+		{
+		case Slow: dm = 0b000; break;
+		case SlowIncreaseMixedDecrease: dm = 0b001; break;
+		case Fast: dm = 0b010; break;
+		case Mixed: dm = 0b011; break;
+    case SlowIncreaseAutoMixedDecrease: dm = 0b100; break;
+		case AutoMixed: dm = 0b101; break;
+		}
+
+    decay = (decay & 0b00011111111) | (dm << 8); // this might not work the way I think it does
+    writeDECAY();
+  }
+
+  /* sets Decay transition Time in increments of 500 ns */
+  //
+  //
+  //
+  void setDecayTransition(uint8_t time)
+  {
+    decay = (decay & 0b11100000000) | time;
+    writeDECAY();
+  }
+
+  /* reads the CTRL register */
+  //
+  //
+  //
+  uint16_t readCTRLReg()
+  {
+    return driver.readReg(CTRL);
+  }
+
+  /* reads the TORQUE register */
+  //
+  //
+  //
+  uint16_t readTORQUEReg()
+  {
+    return driver.readReg(TORQUE);
+  }
+
+  /* reads the OFF register */
+  //
+  //
+  //
+  uint16_t readOFFReg()
+  {
+    return driver.readReg(OFF);
+  }
+
+  /* reads the BLANK register */
+  //
+  //
+  //
+  uint16_t readBLANKReg()
+  {
+    return driver.readReg(BLANK);
+  }
+
+  /* reads the DECAY register */
+  //
+  //
+  //
+  uint16_t readDECAYReg()
+  {
+    return driver.readReg(DECAY);
+  }
+
+
+  /* reads the STALL register */
+  //
+  //
+  //
+  /*
+  uint16_t readSTALLReg()
+  {
+    return driver.readReg(STALL);
+  }
+  */
+
+  /* reads the DRIVE register */
+  //
+  //
+  //
+  /*
+  uint16_t readDRIVEReg()
+  {
+    return driver.readReg(DRIVE);
+  }
+  */
+
+  /* reads the STATUS register */
+  //
+  //
+  //
+  uint16_t readSTATUSReg()
+  {
+    return driver.readReg(STATUS);
+  }
+
+
+  /* clears the status register */
+  //
+  //
+  //
+  void clearStatusReg()
+  {
+    status = 0x00;
+    writeSTATUS();
+  }
+
+  /* checks Status of Specifiic Errors returns true if specific error is high */
+  //
+  //
+  //
+  bool errorDetected(uint8_t error)
+  {
+    status = readSTATUSReg();
+
+    switch(error)
+    {
+    case overTemp: if (status & (1)) return true;
+    case aOverCurrent: if (status & (1 << 1)) return true;
+    case bOverCurrent: if (status & (1 << 2)) return true;
+    case aPreDriver: if (status & (1 << 3)) return true;
+    case bPreDriver: if (status & (1 << 4)) return true;
+    case underVoltageLockout: if (status & (1 << 5)) return true;
+    case stallDetected: if (status & (1 << 6)) return true;
+    case latchedStallDetected: if (status & (1 << 7)) return true;
+    }
+    // if  no error specified or the error we're looking for isn't ocurring return false
+    return false;
+  }
 
 protected:
 
