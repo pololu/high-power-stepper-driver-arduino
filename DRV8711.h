@@ -44,7 +44,6 @@ public:
         deselectChip();
         // Mask off read/write bit
         dataOut = dataOut & 0x0FFF;
-        // 
         return dataOut;
     }
 
@@ -149,9 +148,6 @@ public:
     };
 
     /*! Possible arguments to setDecayMode(). */
-    //
-    //
-    //
     enum setDecayMode
     {
       Slow = 0b000,
@@ -163,9 +159,6 @@ public:
     };
 
     /*! Possible arguments to checkErrorStatus(). */
-    //
-    //
-    //
     enum errorType
     {
       overTemp = 0b000,
@@ -328,9 +321,6 @@ public:
 	}
 
   /* Sets current trip blanking time, in increments of 20 ns */
-  //
-  //
-  //
   void setBlankingTime(uint8_t tBlank)
   {
     blank = ((blank&0b100000000) | tBlank);
@@ -338,9 +328,6 @@ public:
   }
 
   /* Disable adaptive blanking time */
-  //
-  //
-  //
   void disableAdaptiveBlankingTime()
   {
     blank = (blank & 0b011111111);
@@ -348,9 +335,6 @@ public:
   }
 
   /* Enable adaptive blanking time */
-  //
-  //
-  //
   void enableAdaptiveBlankingTime()
   {
     blank = (blank  | 0b100000000);
@@ -358,9 +342,6 @@ public:
   }
 
   /* setDecayMode */
-  //
-  //
-  //
   void setDecayMode(uint8_t mode)
   {
     // Pick a default decay mode of slow decay for increasing currents, mixed decay for decreasing currents
@@ -381,9 +362,6 @@ public:
   }
 
   /* sets Decay transition Time in increments of 500 ns */
-  //
-  //
-  //
   void setDecayTransition(uint8_t time)
   {
     decay = (decay & 0b11100000000) | time;
@@ -391,45 +369,30 @@ public:
   }
 
   /* reads the CTRL register */
-  //
-  //
-  //
   uint16_t readCTRLReg()
   {
     return driver.readReg(CTRL);
   }
 
   /* reads the TORQUE register */
-  //
-  //
-  //
   uint16_t readTORQUEReg()
   {
     return driver.readReg(TORQUE);
   }
 
   /* reads the OFF register */
-  //
-  //
-  //
   uint16_t readOFFReg()
   {
     return driver.readReg(OFF);
   }
 
   /* reads the BLANK register */
-  //
-  //
-  //
   uint16_t readBLANKReg()
   {
     return driver.readReg(BLANK);
   }
 
   /* reads the DECAY register */
-  //
-  //
-  //
   uint16_t readDECAYReg()
   {
     return driver.readReg(DECAY);
@@ -437,9 +400,6 @@ public:
 
 
   /* reads the STALL register */
-  //
-  //
-  //
   /*
   uint16_t readSTALLReg()
   {
@@ -448,9 +408,6 @@ public:
   */
 
   /* reads the DRIVE register */
-  //
-  //
-  //
   /*
   uint16_t readDRIVEReg()
   {
@@ -459,9 +416,6 @@ public:
   */
 
   /* reads the STATUS register */
-  //
-  //
-  //
   uint16_t readSTATUSReg()
   {
     return driver.readReg(STATUS);
@@ -469,9 +423,6 @@ public:
 
 
   /* clears the status register */
-  //
-  //
-  //
   void clearStatusReg()
   {
     status = 0x00;
@@ -479,25 +430,22 @@ public:
   }
 
   /* checks Status of Specifiic Errors returns true if specific error is high */
-  //
-  //
-  //
   bool errorDetected(uint8_t error)
   {
     status = readSTATUSReg();
 
     switch(error)
     {
-    case overTemp: if (status & (1)) return true;
-    case aOverCurrent: if (status & (1 << 1)) return true;
-    case bOverCurrent: if (status & (1 << 2)) return true;
-    case aPreDriver: if (status & (1 << 3)) return true;
-    case bPreDriver: if (status & (1 << 4)) return true;
-    case underVoltageLockout: if (status & (1 << 5)) return true;
-    case stallDetected: if (status & (1 << 6)) return true;
-    case latchedStallDetected: if (status & (1 << 7)) return true;
+    case overTemp: return (status & (1));
+    case aOverCurrent: return (status & (1 << 1));
+    case bOverCurrent: return (status & (1 << 2));
+    case aPreDriver: return (status & (1 << 3));
+    case bPreDriver: return (status & (1 << 4));
+    case underVoltageLockout: return (status & (1 << 5));
+    case stallDetected: return (status & (1 << 6));
+    case latchedStallDetected: return (status & (1 << 7));
     }
-    // if  no error specified or the error we're looking for isn't ocurring return false
+    // in case switch statement does not occur return false.
     return false;
   }
 
