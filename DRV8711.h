@@ -429,24 +429,42 @@ public:
     writeSTATUS();
   }
 
-  /* checks Status of Specifiic Errors returns true if specific error is high */
+  /* blanket is there any error function */
+  bool errorDetected()
+  {
+    if((readSTATUSReg() & 0xFF) != 0)
+      return true;
+    return false;
+  }
+
+  /* sees if there is a specific error detected */
   bool errorDetected(uint8_t error)
   {
     status = readSTATUSReg();
-
-    switch(error)
-    {
-    case overTemp: return (status & (1));
-    case aOverCurrent: return (status & (1 << 1));
-    case bOverCurrent: return (status & (1 << 2));
-    case aPreDriver: return (status & (1 << 3));
-    case bPreDriver: return (status & (1 << 4));
-    case underVoltageLockout: return (status & (1 << 5));
-    case stallDetected: return (status & (1 << 6));
-    case latchedStallDetected: return (status & (1 << 7));
+    if(error < 8){
+      return (status & (1 << error));
     }
-    // in case switch statement does not occur return false.
-    return false;
+    else return false;
+  }
+
+  bool verifySettings()
+  {
+    return driver.readReg(CTRL) == ctrl &&
+           driver.readReg(TORQUE) == torque &&
+           driver.readReg(OFF) == off &&
+           driver.readReg(BLANK) == blank &&
+           driver.readReg(DECAY) == decay &&
+           driver.readReg(STATUS) == status;
+  }
+
+  void applySettings()
+  {
+    writeCTRL();
+    writeTORQUE();
+    writeOFF();
+    writeBLANK();
+    writeDECAY();
+    writeSTATUS();
   }
 
 protected:
