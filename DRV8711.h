@@ -445,7 +445,7 @@ public:
 
 
   /* clears the status register */
-  void clearStatusReg()
+  void clearSTATUSReg()
   {
     status = 0x00;
     writeSTATUS();
@@ -463,7 +463,7 @@ public:
   bool errorDetected(uint8_t error)
   {
     status = readSTATUSReg();
-    if(error < 8){
+    if((error & 0xFF) != 0){
       return (status & (1 << error));
     }
     else return false;
@@ -488,12 +488,14 @@ public:
     writeOFF();
     writeBLANK();
     writeDECAY();
+    writeDRIVE();
+    writeSTALL();
     writeSTATUS();
   }
 
 protected:
 
-    uint16_t ctrl, torque, off, blank, decay, status;
+    uint16_t ctrl, torque, off, blank, decay, stall, drive, status;
 
     /*! Writes the cached value of the CTRL register to the device. */
     void writeCTRL()
