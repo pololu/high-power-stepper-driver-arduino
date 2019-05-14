@@ -99,6 +99,8 @@ public:
         off = 0x30;
         blank = 0x80;
         decay = 0x110;
+        stall = 0x40;
+        drive = 0xA59;
         status = 0x0;
     }
 
@@ -295,6 +297,28 @@ public:
 		writeCTRL();
 	}
 
+  void reset()
+  {
+    ctrl = 0xC10;
+    torque = 0x1FF;
+    off = 0x30;
+    blank = 0x80;
+    decay = 0x110;
+    stall = 0x40;
+    drive = 0xA59;
+    status = 0x0;
+    while(!verifySettings()){
+        driver.writeReg(CTRL, ctrl);
+        driver.writeReg(TORQUE, torque);
+        driver.writeReg(OFF, off);
+        driver.writeReg(BLANK, blank);
+        driver.writeReg(DECAY, decay);
+        driver.writeReg(STALL, stall);
+        driver.writeReg(DRIVE, drive);
+        driver.writeReg(STATUS, status);
+    }
+  }
+
 	/*! Sets TORQUE bits [7:0] in TORQUE register.  See equation in
 	 * datasheet. */
 	void setTorque(uint8_t torqueValue)
@@ -452,6 +476,8 @@ public:
            driver.readReg(OFF) == off &&
            driver.readReg(BLANK) == blank &&
            driver.readReg(DECAY) == decay &&
+           driver.readReg(STALL) == stall &&
+           driver.readReg(DRIVE) == drive &&
            driver.readReg(STATUS) == status;
   }
 
