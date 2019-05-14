@@ -110,8 +110,8 @@ public:
         OFF = 0x02,
         BLANK = 0x03,
         DECAY = 0x04,
-        //STALL = 0x05,
-        //DRIVE = 0x06,
+        STALL = 0x05,
+        DRIVE = 0x06,
         STATUS = 0x07,
     };
 
@@ -400,20 +400,18 @@ public:
 
 
   /* reads the STALL register */
-  /*
   uint16_t readSTALLReg()
   {
     return driver.readReg(STALL);
   }
-  */
+
 
   /* reads the DRIVE register */
-  /*
   uint16_t readDRIVEReg()
   {
     return driver.readReg(DRIVE);
   }
-  */
+
 
   /* reads the STATUS register */
   uint16_t readSTATUSReg()
@@ -502,16 +500,16 @@ protected:
     }
 
     /*! Writes the cached value of the STALL register to the device. */
-    //void writeSTALL()
-    //{
-    //    driver.writeReg(STALL, stall);
-    //}
+    void writeSTALL()
+    {
+        driver.writeReg(STALL, stall);
+    }
 
     /*! Writes the cached value of the DRIVE register to the device. */
-    //void writeDRIVE()
-    //{
-    //    driver.writeReg(DRIVE, drive);
-    //}
+    void writeDRIVE()
+    {
+        driver.writeReg(DRIVE, drive);
+    }
 
     /*! Writes the cached value of the STATUS register to the device. */
     void writeSTATUS()
