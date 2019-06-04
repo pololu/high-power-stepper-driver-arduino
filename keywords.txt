@@ -1,0 +1,33 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DRV8711SPI	KEYWORD1
+HighPowerStepperDriver	KEYWORD1
+HPSDRegAddr	KEYWORD1
+HPSDStepMode	KEYWORD1
+HPSDDecayMode	KEYWORD1
+HPSDStatusBit	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setChipSelectPin	KEYWORD2
+readReg	KEYWORD2
+writeReg	KEYWORD2
+resetSettings	KEYWORD2
+verifySettings	KEYWORD2
+applySettings	KEYWORD2
+enableDriver	KEYWORD2
+disableDriver	KEYWORD2
+setDirection	KEYWORD2
+getDirection	KEYWORD2
+step	KEYWORD2
+setStepMode	KEYWORD2
+setCurrentMilliamps36v4	KEYWORD2
+setDecayMode	KEYWORD2
+readStatus	KEYWORD2
+clearStatus	KEYWORD2
+readFaults	KEYWORD2
+clearFaults	KEYWORD2
