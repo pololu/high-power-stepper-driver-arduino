@@ -2,7 +2,8 @@
 // Driver.
 //
 // It shows how to initialize the driver, configure various settings, and enable
-// the driver.
+// the driver.  It shows how to send pulses to the STEP pin to step the motor
+// and how to switch directions using the DIR pin.
 //
 // Before using this example, be sure to change the setCurrentMilliamps36v4 line
 // to have an appropriate current limit for your system.  Also, see this

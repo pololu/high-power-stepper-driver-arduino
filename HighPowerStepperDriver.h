@@ -1,13 +1,14 @@
 // Copyright Pololu Corporation.  For more information, see http://www.pololu.com/
 
-/// \file DRV8711.h
+/// \file HighPowerStepperDriver.h
 ///
-/// This is the main header file for the DRV8711 library, a library for
-/// controlling the DRV8711 micro-stepping stepper motor driver.
+/// This is the main header file for the HighPowerStepperDriver library,
+/// a library for controlling Pololu's High Power Stepper Motor Drivers that are
+/// based on the DRV8711.
 ///
 /// For more information about this library, see:
 ///
-///   https://github.com/pololu/drv8711-arduino
+///   https://github.com/pololu/high-power-stepper-driver-arduino
 ///
 /// That is the main repository for this library.
 
@@ -44,7 +45,7 @@ public:
     selectChip();
     uint16_t dataOut = transfer((0x8 | (address & 0b111)) << 12);
     deselectChip();
-    return dataOut & 0xFFF; // Mask off read/write bit
+    return dataOut & 0xFFF;
   }
 
   /// Writes the specified value to a register.
@@ -87,74 +88,75 @@ private:
 };
 
 
-  /// Addresses of control and status registers.
-  enum HPSDRegAddr : uint8_t
-  {
-    CTRL   = 0x00,
-    TORQUE = 0x01,
-    OFF    = 0x02,
-    BLANK  = 0x03,
-    DECAY  = 0x04,
-    STALL  = 0x05,
-    DRIVE  = 0x06,
-    STATUS = 0x07,
-  };
+/// Addresses of control and status registers.
+enum class HPSDRegAddr : uint8_t
+{
+  CTRL   = 0x00,
+  TORQUE = 0x01,
+  OFF    = 0x02,
+  BLANK  = 0x03,
+  DECAY  = 0x04,
+  STALL  = 0x05,
+  DRIVE  = 0x06,
+  STATUS = 0x07,
+};
 
-  /// Possible arguments to setStepMode().
-  enum HPSDStepMode : uint16_t
-  {
-    MicroStep256 = 256,
-    MicroStep128 = 128,
-    MicroStep64  =  64,
-    MicroStep32  =  32,
-    MicroStep16  =  16,
-    MicroStep8   =   8,
-    MicroStep4   =   4,
-    MicroStep2   =   2,
-    MicroStep1   =   1,
-  };
+/// Possible arguments to setStepMode().
+enum class HPSDStepMode : uint16_t
+{
+  MicroStep256 = 256,
+  MicroStep128 = 128,
+  MicroStep64  =  64,
+  MicroStep32  =  32,
+  MicroStep16  =  16,
+  MicroStep8   =   8,
+  MicroStep4   =   4,
+  MicroStep2   =   2,
+  MicroStep1   =   1,
+};
 
-  /// Possible arguments to setDecayMode().
-  enum class HPSDDecayMode : uint8_t
-  {
-    Slow                = 0b000,
-    SlowIncMixedDec     = 0b001,
-    Fast                = 0b010,
-    Mixed               = 0b011,
-    SlowIncAutoMixedDec = 0b100,
-    AutoMixed           = 0b101,
-  };
+/// Possible arguments to setDecayMode().
+enum class HPSDDecayMode : uint8_t
+{
+  Slow                = 0b000,
+  SlowIncMixedDec     = 0b001,
+  Fast                = 0b010,
+  Mixed               = 0b011,
+  SlowIncAutoMixedDec = 0b100,
+  AutoMixed           = 0b101,
+};
 
-  /// Bitmasks for the return value of readStatus().
-  ///
-  /// See the DRV8711 datasheet for detailed descriptions of these status
-  /// conditions.
-  enum class HPSDStatusBit : uint8_t
-  {
-    /// Overtemperature shutdown
-    OTS = (1 << 0),
+/// Bits that are set in the return value of readStatus() to indicate status
+/// conditions.
+///
+/// See the DRV8711 datasheet for detailed descriptions of these status
+/// conditions.
+enum class HPSDStatusBit : uint8_t
+{
+  /// Overtemperature shutdown
+  OTS = 0,
 
-    /// Channel A overcurrent shutdown
-    AOCP = (1 << 1),
+  /// Channel A overcurrent shutdown
+  AOCP = 1,
 
-    /// Channel B overcurrent shutdown
-    BOCP = (1 << 2),
+  /// Channel B overcurrent shutdown
+  BOCP = 2,
 
-    /// Channel A predriver fault
-    APDF = (1 << 3),
+  /// Channel A predriver fault
+  APDF = 3,
 
-    /// Channel B predriver fault
-    BPDF = (1 << 4),
+  /// Channel B predriver fault
+  BPDF = 4,
 
-    /// Undervoltage lockout
-    UVLO = (1 << 5),
+  /// Undervoltage lockout
+  UVLO = 5,
 
-    /// Stall detected
-    STD = (1 << 6),
+  /// Stall detected
+  STD = 6,
 
-    /// Latched stall detect
-    STDLAT = (1 << 7),
-  };
+  /// Latched stall detect
+  STDLAT = 7,
+};
 
 
 /// This class provides high-level functions for controlling a DRV8711-based
@@ -174,7 +176,6 @@ public:
     stall  = 0x040;
     drive  = 0xA59;
   }
-
 
   /// Configures this object to use the specified pin as a chip select pin.
   /// You must use a chip select pin; the DRV8711 requires it.
@@ -198,7 +199,6 @@ public:
     stall  = 0x040;
     drive  = 0xA59;
     applySettings();
-    clearStatus();
   }
 
   /// Reads back the SPI configuration registers from the device and verifies
@@ -212,8 +212,10 @@ public:
   /// they do not.
   bool verifySettings()
   {
+    // Bit 10 in TORQUE is write-only and will always read as 0, so ignore it
+    // when verifying.
     return driver.readReg(CTRL)   == ctrl   &&
-           driver.readReg(TORQUE) == torque &&
+           driver.readReg(TORQUE) == (torque & ~(1 << 10)) &&
            driver.readReg(OFF)    == off    &&
            driver.readReg(BLANK)  == blank  &&
            driver.readReg(DECAY)  == decay  &&
@@ -263,7 +265,7 @@ public:
   /// Allowed values are 0 or 1.
   ///
   /// You can use this command to control the direction of the stepper motor and
-  /// simply leave the DIR pin disconnected.
+  /// leave the DIR pin disconnected.
   void setDirection(bool value)
   {
     if (value)
@@ -287,14 +289,13 @@ public:
 
   /// Advances the indexer by one step (RSTEP = 1).
   ///
+  /// You can use this command to step the stepper motor and leave the STEP pin
+  /// disconnected.
+  ///
   /// The driver automatically clears the RSTEP bit after it is written.
   void step()
   {
-    ctrl |= (1 << 2);
-    writeCTRL();
-
-    // Since the driver automatically clears RSTEP, clear our cached value too.
-    ctrl &= ~(1 << 2);
+    driver.writeReg(HPSDRegAddr::CTRL, ctrl | (1 << 2));
   }
 
   /// Sets the driver's stepping mode (MODE).
@@ -303,31 +304,48 @@ public:
   /// much the output moves for each step taken and how much current flows
   /// through the coils in each stepping position.
   ///
-  /// The argument to this function should be one of the members of the
-  /// #StepMode enum.
-  ///
   /// If an invalid stepping mode is passed to this function, then it selects
   /// 1/4 micro-step, which is the driver's default.
-  void setStepMode(uint16_t mode)
+  ///
+  /// Example usage:
+  /// ~~~{.cpp}
+  /// sd.setStepMode(HPSDStepMode::MicroStep32);
+  /// ~~~
+  void setStepMode(HPSDStepMode mode)
   {
     // Pick 1/4 micro-step by default.
     uint8_t sm = 0b0010;
 
     switch (mode)
     {
-    case MicroStep1:   sm = 0b0000; break;
-    case MicroStep2:   sm = 0b0001; break;
-    case MicroStep4:   sm = 0b0010; break;
-    case MicroStep8:   sm = 0b0011; break;
-    case MicroStep16:  sm = 0b0100; break;
-    case MicroStep32:  sm = 0b0101; break;
-    case MicroStep64:  sm = 0b0110; break;
-    case MicroStep128: sm = 0b0111; break;
-    case MicroStep256: sm = 0b1000; break;
+    case HPSDStepMode::MicroStep1:   sm = 0b0000; break;
+    case HPSDStepMode::MicroStep2:   sm = 0b0001; break;
+    case HPSDStepMode::MicroStep4:   sm = 0b0010; break;
+    case HPSDStepMode::MicroStep8:   sm = 0b0011; break;
+    case HPSDStepMode::MicroStep16:  sm = 0b0100; break;
+    case HPSDStepMode::MicroStep32:  sm = 0b0101; break;
+    case HPSDStepMode::MicroStep64:  sm = 0b0110; break;
+    case HPSDStepMode::MicroStep128: sm = 0b0111; break;
+    case HPSDStepMode::MicroStep256: sm = 0b1000; break;
     }
 
     ctrl = (ctrl & 0b111110000111) | (sm << 3);
     writeCTRL();
+  }
+
+  /// Sets the driver's stepping mode (MODE).
+  ///
+  /// This version of the function allows you to express the requested
+  /// microstepping ratio as a number directly.
+  ///
+  /// ~~~{.cpp}
+  /// sd.setStepMode(32);
+  /// ~~~
+  ///
+  /// \see setStepMode(HPSDStepMode)
+  void setStepMode(uint16_t mode)
+  {
+    setStepMode((HPSDStepMode)mode);
   }
 
   /// Sets the current limit for a High-Power Stepper Motor Driver 36v4.
@@ -386,8 +404,10 @@ public:
 
   /// Sets the driver's decay mode (DECMOD).
   ///
-  /// The argument to this function should be one of the members of the
-  /// #DecayMode enum.
+  /// Example usage:
+  /// ~~~{.cpp}
+  /// sd.setDecayMode(HPSDDecayMode::AutoMixed);
+  /// ~~~
   void setDecayMode(HPSDDecayMode mode)
   {
     decay = (decay & 0b00011111111) | (((uint8_t)mode & 0b111) << 8);
@@ -400,7 +420,15 @@ public:
   /// status condition (the upper 4 bits of the 12-bit STATUS register are not
   /// used).  You can simply compare the return value to 0 to see if any of the
   /// status bits are set, or you can use the logical AND operator (`&`) and the
-  /// #StatusBit enum to check individual bits.
+  /// #HPSDStatusBit enum to check individual bits.
+  ///
+  /// Example usage:
+  /// ~~~{.cpp}
+  /// if (sd.readStatus() & (1 << (uint8_t)HPSDStatusBit::UVLO))
+  /// {
+  ///   // Undervoltage lockout is active.
+  /// }
+  /// ~~~
   uint8_t readStatus()
   {
     return driver.readReg(HPSDRegAddr::STATUS);
