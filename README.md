@@ -90,6 +90,7 @@ HighPowerStepperDriver class reference.
 
 * 1.0.0 (2019-06-04): Original release.
 
+[a-star]: https://www.pololu.com/a-star
 [arduino-uno]: https://www.pololu.com/product/2191
 [arduino-leonardo]: https://www.pololu.com/product/2191
 [doc]: https://pololu.github.io/high-power-stepper-driver-arduino/
