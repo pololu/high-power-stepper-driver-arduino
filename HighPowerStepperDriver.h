@@ -17,6 +17,21 @@
 #include <Arduino.h>
 #include <SPI.h>
 
+
+/// Addresses of control and status registers.
+enum class HPSDRegAddr : uint8_t
+{
+  CTRL   = 0x00,
+  TORQUE = 0x01,
+  OFF    = 0x02,
+  BLANK  = 0x03,
+  DECAY  = 0x04,
+  STALL  = 0x05,
+  DRIVE  = 0x06,
+  STATUS = 0x07,
+};
+
+
 /// This class provides low-level functions for reading and writing from the SPI
 /// interface of a DRV8711 stepper motor controller IC.
 ///
@@ -48,6 +63,12 @@ public:
     return dataOut & 0xFFF;
   }
 
+  /// Reads the register at the given address and returns its raw value.
+  uint16_t readReg(HPSDRegAddr address)
+  {
+    return readReg((uint8_t)address);
+  }
+
   /// Writes the specified value to a register.
   void writeReg(uint8_t address, uint16_t value)
   {
@@ -61,6 +82,12 @@ public:
     // The CS line must go low after writing for the value to actually take
     // effect.
     deselectChip();
+  }
+
+  /// Writes the specified value to a register.
+  void writeReg(HPSDRegAddr address, uint16_t value)
+  {
+    writeReg((uint8_t)address, value);
   }
 
 private:
@@ -87,19 +114,6 @@ private:
   uint8_t csPin;
 };
 
-
-/// Addresses of control and status registers.
-enum class HPSDRegAddr : uint8_t
-{
-  CTRL   = 0x00,
-  TORQUE = 0x01,
-  OFF    = 0x02,
-  BLANK  = 0x03,
-  DECAY  = 0x04,
-  STALL  = 0x05,
-  DRIVE  = 0x06,
-  STATUS = 0x07,
-};
 
 /// Possible arguments to setStepMode().
 enum class HPSDStepMode : uint16_t
@@ -214,13 +228,13 @@ public:
   {
     // Bit 10 in TORQUE is write-only and will always read as 0, so ignore it
     // when verifying.
-    return driver.readReg(CTRL)   == ctrl   &&
-           driver.readReg(TORQUE) == (torque & ~(1 << 10)) &&
-           driver.readReg(OFF)    == off    &&
-           driver.readReg(BLANK)  == blank  &&
-           driver.readReg(DECAY)  == decay  &&
-           driver.readReg(STALL)  == stall  &&
-           driver.readReg(DRIVE)  == drive;
+    return driver.readReg(HPSDRegAddr::CTRL)   == ctrl   &&
+           driver.readReg(HPSDRegAddr::TORQUE) == (torque & ~(1 << 10)) &&
+           driver.readReg(HPSDRegAddr::OFF)    == off    &&
+           driver.readReg(HPSDRegAddr::BLANK)  == blank  &&
+           driver.readReg(HPSDRegAddr::DECAY)  == decay  &&
+           driver.readReg(HPSDRegAddr::STALL)  == stall  &&
+           driver.readReg(HPSDRegAddr::DRIVE)  == drive;
   }
 
   /// Re-writes the cached settings stored in this class to the device.

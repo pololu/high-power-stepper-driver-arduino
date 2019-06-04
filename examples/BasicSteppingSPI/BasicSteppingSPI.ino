@@ -1,8 +1,17 @@
 // This example shows basic use of a Pololu High Power Stepper Motor Driver.
 //
 // It shows how to initialize the driver, configure various settings, and enable
-// the driver.  It shows how to send pulses to the STEP pin to step the motor
-// and how to switch directions using the DIR pin.
+// the driver.  It shows how to step the motor and switch directions using the
+// driver's SPI interface through the library's step() and setDirection() member
+// functions.
+//
+// Since SPI is used to trigger steps and set the direction, connecting the
+// driver's STEP and DIR pins is optional for this example.  However, note that
+// using SPI control adds some overhead compared to using the STEP and DIR pins.
+//  In addition, since the library caches SPI register values, SPI control is
+// more likely to re-enable the driver with the wrong settings (e.g. curren
+//  limit) after a power interruption, although using the verifySettings() and
+// applySettings() functions appropriately can help prevent this.
 //
 // Before using this example, be sure to change the setCurrentMilliamps36v4 line
 // to have an appropriate current limit for your system.  Also, see this
@@ -61,10 +70,10 @@ void setup()
 void loop()
 {
   // Step in the default direction 1000 times.
-  setDirection(0);
+  sd.setDirection(0);
   for(unsigned int x = 0; x < 1000; x++)
   {
-    step();
+    sd.step();
     delayMicroseconds(StepPeriodUs);
   }
 
@@ -72,35 +81,13 @@ void loop()
   delay(300);
 
   // Step in the other direction 1000 times.
-  setDirection(1);
+  sd.setDirection(1);
   for(unsigned int x = 0; x < 1000; x++)
   {
-    step();
+    sd.step();
     delayMicroseconds(StepPeriodUs);
   }
 
   // Wait for 300 ms.
   delay(300);
-}
-
-// Sends a pulse on the STEP pin to tell the driver to take one step, and also
-//delays to control the speed of the motor.
-void step()
-{
-  // The STEP minimum high pulse width is 1.9 microseconds.
-  digitalWrite(StepPin, HIGH);
-  delayMicroseconds(3);
-  digitalWrite(StepPin, LOW);
-  delayMicroseconds(3);
-}
-
-// Writes a high or low value to the direction pin to specify what direction to
-// turn the motor.
-void setDirection(bool dir)
-{
-  // The STEP pin must not change for at least 200 nanoseconds before and after
-  // changing the DIR pin.
-  delayMicroseconds(1);
-  digitalWrite(DirPin, dir);
-  delayMicroseconds(1);
 }

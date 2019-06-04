@@ -43,8 +43,7 @@ Arduino and the driver:
 The SDATO pin is only needed if you want to read information back from the
 stepper driver.  Since the motor can be stepped and its direction changed using
 the SPI interface, it is possible to use the driver without connecting the STEP
-and DIR pins, but the example program uses the pins and expects them to be
-connected.
+and DIR pins, and they are not used in every example.
 
 The SPI pins (MOSI, MISO, and SCK) on Arduino-compatible boards are sometimes
 not labeled.  You should refer to the documentation for your particular board
@@ -74,10 +73,10 @@ If this does not work, you can manually install the library:
 
 ## Examples
 
-An example sketch is available that shows how to use the library. You can
-access it from the Arduino IDE by opening the "File" menu, selecting
+Several example sketches are available that show how to use the library. You
+can access them from the Arduino IDE by opening the "File" menu, selecting
 "Examples", and then selecting "HighPowerStepperDriver". If you cannot find the
-example, the library was probably installed incorrectly and you should retry
+examples, the library was probably installed incorrectly and you should retry
 the installation instructions above.
 
 ## Documentation
