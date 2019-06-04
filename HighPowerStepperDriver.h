@@ -132,36 +132,36 @@ private:
   enum class HPSDStatusBit : uint8_t
   {
     /// Overtemperature shutdown
-    OTS = (1 << 0), 
-    
+    OTS = (1 << 0),
+
     /// Channel A overcurrent shutdown
     AOCP = (1 << 1),
-    
+
     /// Channel B overcurrent shutdown
     BOCP = (1 << 2),
-    
+
     /// Channel A predriver fault
     APDF = (1 << 3),
-    
+
     /// Channel B predriver fault
     BPDF = (1 << 4),
-    
+
     /// Undervoltage lockout
     UVLO = (1 << 5),
-    
+
     /// Stall detected
     STD = (1 << 6),
-    
+
     /// Latched stall detect
     STDLAT = (1 << 7),
   };
 
 
-/// This class provides high-level functions for controlling a DRV8711-based 
+/// This class provides high-level functions for controlling a DRV8711-based
 /// High-Power Stepper Motor Driver.
 class HighPowerStepperDriver
 {
-public:  
+public:
   /// The default constructor.
   HighPowerStepperDriver()
   {
@@ -220,13 +220,13 @@ public:
            driver.readReg(STALL)  == stall  &&
            driver.readReg(DRIVE)  == drive;
   }
-  
+
   /// Re-writes the cached settings stored in this class to the device.
   ///
   /// You should not normally need to call this function because settings are
   /// written to the device whenever they are changed.  However, if
   /// verifySettings() returns false (due to a power interruption, for
-  /// instance), then you could use applySettings to get the device's settings
+  /// instance), then you could use applySettings() to get the device's settings
   /// back into the desired state.
   void applySettings()
   {
@@ -236,7 +236,7 @@ public:
     writeDECAY();
     writeDRIVE();
     writeSTALL();
-    
+
     // CTRL is written last because it contains the ENBL bit, and we want to try
     // to have all the other settings correct first.  (For example, TORQUE
     // defaults to 0xFF (the maximum value), so it would be better to set a more
@@ -292,6 +292,9 @@ public:
   {
     ctrl |= (1 << 2);
     writeCTRL();
+
+    // Since the driver automatically clears RSTEP, clear our cached value too.
+    ctrl &= ~(1 << 2);
   }
 
   /// Sets the driver's stepping mode (MODE).
@@ -327,12 +330,12 @@ public:
     writeCTRL();
   }
 
-  /// Sets the current limit for a High-Power Stepper Motor Driver 36v40.
+  /// Sets the current limit for a High-Power Stepper Motor Driver 36v4.
   ///
   /// The argument to this function should be the desired current limit in
   /// milliamps.
   ///
-  /// WARNING: The 36v40 can supply up to about 4 A per coil continuously;
+  /// WARNING: The 36v4 can supply up to about 4 A per coil continuously;
   /// higher currents might be sustainable for short periods, but can eventually
   /// cause the MOSFETs to overheat, which could damage them.  See the driver's
   /// product page for more information.
@@ -344,8 +347,10 @@ public:
   ///
   /// This function takes care of setting appropriate values for ISGAIN and
   /// TORQUE to get the desired current limit.
-  void setCurrentLimit36v40(uint16_t limit)
+  void setCurrentMilliamps36v4(uint16_t current)
   {
+    if (current > 8000) { current = 8000; }
+
     // From the DRV8711 datasheet, section 7.3.4, equation 2:
     //
     //   Ifs = (2.75 V * TORQUE) / (256 * ISGAIN * Risense)
@@ -354,21 +359,18 @@ public:
     //
     //   TORQUE = (256 * ISGAIN * Risense * Ifs) / 2.75 V
     //
-    // The 36v40 has an Risense of 30 milliohms, and "limit" is in milliamps, so
-    // we divide it by 1000 to convert to Ifs in amps:
+    // The 36v4 has an Risense of 30 milliohms, and "current" is in milliamps,
+    // so:
     //
-    //   TORQUE = (256 * ISGAIN * 0.03 ohms * (limit/1000) A) / 2.75 V
-    //          = (0.00768 * ISGAIN * limit) / 2.75
+    //   TORQUE = (256 * ISGAIN * (30/1000) ohms * (current/1000) A) / 2.75 V
+    //          = (7680 * ISGAIN * current) / 2750000
     //
     // We want to pick the highest gain (5, 10, 20, or 40) that will not
-    // overflow TORQUE (8 bits, 0xFF max). 
+    // overflow TORQUE (8 bits, 0xFF max), so we start with a gain of 40 and
+    // calculate the TORQUE value needed.
+    uint8_t isgainBits = 0b11;
+    uint16_t torqueBits = ((uint32_t)768  * current) / 6875;
 
-    if (limit > 8000) { limit = 8000; }
-    
-    // Start with a gain of 40 and calculate the TORQUE value needed.
-    uint8_t isgainBits = 0b11;   
-    uint16_t torqueBits = ((uint32_t)768  * limit) / 6875;
-    
     // Halve the gain and TORQUE until the TORQUE value fits in 8 bits.
     while (torqueBits > 0xFF)
     {
@@ -409,12 +411,12 @@ public:
   /// WARNING: Calling this function clears latched faults, which might allow
   /// the motor driver outputs to reactivate.  If you do this repeatedly without
   /// fixing an abnormal condition (like a short circuit), you might damage the
-  /// driver.  
+  /// driver.
   void clearStatus()
   {
     driver.writeReg(HPSDRegAddr::STATUS, 0);
   }
-  
+
   /// Reads fault conditions indicated by the driver.
   ///
   /// The return value is the same as that which would be returned by
@@ -433,7 +435,7 @@ public:
   /// WARNING: Calling this function clears latched faults, which might allow
   /// the motor driver outputs to reactivate.  If you do this repeatedly without
   /// fixing an abnormal condition (like a short circuit), you might damage the
-  /// driver.   
+  /// driver.
   void clearFaults()
   {
     driver.writeReg(HPSDRegAddr::STATUS, ~0b00111111);
