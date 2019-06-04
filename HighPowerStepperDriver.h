@@ -471,55 +471,55 @@ public:
 
 protected:
 
-    uint16_t ctrl, torque, off, blank, decay, stall, drive;
+  uint16_t ctrl, torque, off, blank, decay, stall, drive;
 
-    /// Writes the cached value of the CTRL register to the device.
-    void writeCTRL()
-    {
-      driver.writeReg(HPSDRegAddr::CTRL, ctrl);
-    }
+  /// Writes the cached value of the CTRL register to the device.
+  void writeCTRL()
+  {
+    driver.writeReg(HPSDRegAddr::CTRL, ctrl);
+  }
 
-    /// Writes the cached value of the TORQUE register to the device.
-    void writeTORQUE()
-    {
-        driver.writeReg(HPSDRegAddr::TORQUE, torque);
-    }
+  /// Writes the cached value of the TORQUE register to the device.
+  void writeTORQUE()
+  {
+    driver.writeReg(HPSDRegAddr::TORQUE, torque);
+  }
 
-    /// Writes the cached value of the OFF register to the device.
-    void writeOFF()
-    {
-        driver.writeReg(HPSDRegAddr::OFF, off);
-    }
+  /// Writes the cached value of the OFF register to the device.
+  void writeOFF()
+  {
+    driver.writeReg(HPSDRegAddr::OFF, off);
+  }
 
-    /// Writes the cached value of the BLANK register to the device.
-    void writeBLANK()
-    {
-        driver.writeReg(HPSDRegAddr::BLANK, blank);
-    }
+  /// Writes the cached value of the BLANK register to the device.
+  void writeBLANK()
+  {
+    driver.writeReg(HPSDRegAddr::BLANK, blank);
+  }
 
-    /// Writes the cached value of the DECAY register to the device.
-    void writeDECAY()
-    {
-        driver.writeReg(HPSDRegAddr::DECAY, decay);
-    }
+  /// Writes the cached value of the DECAY register to the device.
+  void writeDECAY()
+  {
+    driver.writeReg(HPSDRegAddr::DECAY, decay);
+  }
 
-    /// Writes the cached value of the STALL register to the device.
-    void writeSTALL()
-    {
-        driver.writeReg(HPSDRegAddr::STALL, stall);
-    }
+  /// Writes the cached value of the STALL register to the device.
+  void writeSTALL()
+  {
+    driver.writeReg(HPSDRegAddr::STALL, stall);
+  }
 
-    /// Writes the cached value of the DRIVE register to the device.
-    void writeDRIVE()
-    {
-        driver.writeReg(HPSDRegAddr::DRIVE, drive);
-    }
+  /// Writes the cached value of the DRIVE register to the device.
+  void writeDRIVE()
+  {
+    driver.writeReg(HPSDRegAddr::DRIVE, drive);
+  }
 
 public:
-    /// This object handles all the communication with the DRV8711.  Generally,
-    /// you should not need to use it in your code for basic usage of a
-    /// High-Power Stepper Motor Driver, but you might want to use it to access
-    /// more advanced settings that the HighPowerStepperDriver class does not
-    /// provide functions for.
-    DRV8711SPI driver;
+  /// This object handles all the communication with the DRV8711.  Generally,
+  /// you should not need to use it in your code for basic usage of a
+  /// High-Power Stepper Motor Driver, but you might want to use it to access
+  /// more advanced settings that the HighPowerStepperDriver class does not
+  /// provide functions for.
+  DRV8711SPI driver;
 };
