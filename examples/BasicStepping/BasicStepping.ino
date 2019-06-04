@@ -1,5 +1,4 @@
-// This example shows basic use of a DRV8711-based High Power Stepper Motor
-// Driver.
+// This example shows basic use of a Pololu High Power Stepper Motor Driver.
 //
 // It shows how to initialize the driver, configure various settings, and enable
 // the driver.  It shows how to send pulses to the STEP pin to step the motor

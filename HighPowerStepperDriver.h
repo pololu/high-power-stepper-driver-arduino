@@ -3,7 +3,7 @@
 /// \file HighPowerStepperDriver.h
 ///
 /// This is the main header file for the HighPowerStepperDriver library,
-/// a library for controlling Pololu's High Power Stepper Motor Drivers that are
+/// a library for controlling Pololu's High-Power Stepper Motor Drivers that are
 /// based on the DRV8711.
 ///
 /// For more information about this library, see:
