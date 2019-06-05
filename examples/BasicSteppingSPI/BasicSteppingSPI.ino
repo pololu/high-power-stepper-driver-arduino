@@ -8,9 +8,9 @@
 // Since SPI is used to trigger steps and set the direction, connecting the
 // driver's STEP and DIR pins is optional for this example.  However, note that
 // using SPI control adds some overhead compared to using the STEP and DIR pins.
-//  In addition, since the library caches SPI register values, SPI control is
-// more likely to re-enable the driver with the wrong settings (e.g. curren
-//  limit) after a power interruption, although using the verifySettings() and
+// In addition, since the library caches SPI register values, SPI control is
+// more likely to re-enable the driver with the wrong settings (e.g. current
+// limit) after a power interruption, although using the verifySettings() and
 // applySettings() functions appropriately can help prevent this.
 //
 // Before using this example, be sure to change the setCurrentMilliamps36v4 line
@@ -21,8 +21,6 @@
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
 
-const uint8_t DirPin = 2;
-const uint8_t StepPin = 3;
 const uint8_t CSPin = 4;
 
 // This period is the length of the delay between steps, which controls the
