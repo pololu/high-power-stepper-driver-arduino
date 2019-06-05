@@ -36,12 +36,6 @@ void setup()
   SPI.begin();
   sd.setChipSelectPin(CSPin);
 
-  // Drive the STEP and DIR pins low initially.
-  pinMode(StepPin, OUTPUT);
-  digitalWrite(StepPin, LOW);
-  pinMode(DirPin, OUTPUT);
-  digitalWrite(DirPin, LOW);
-
   // Give the driver some time to power up.
   delay(1);
 
