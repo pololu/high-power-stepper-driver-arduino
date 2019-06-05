@@ -226,8 +226,7 @@ public:
   /// they do not.
   bool verifySettings()
   {
-    // Bit 10 in TORQUE is write-only and will always read as 0, so ignore it
-    // when verifying.
+    // Bit 10 in TORQUE is write-only and will always read as 0.
     return driver.readReg(HPSDRegAddr::CTRL)   == ctrl   &&
            driver.readReg(HPSDRegAddr::TORQUE) == (torque & ~(1 << 10)) &&
            driver.readReg(HPSDRegAddr::OFF)    == off    &&
