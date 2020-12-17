@@ -2,7 +2,6 @@
 
 Version: 1.0.0<br/>
 Release date: 2019-06-04<br/>
-[![Build Status](https://travis-ci.org/pololu/high-power-stepper-driver-arduino.svg?branch=master)](https://travis-ci.org/pololu/high-power-stepper-driver-arduino)<br>
 [www.pololu.com](https://www.pololu.com/)
 
 ## Summary
