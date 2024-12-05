@@ -6,7 +6,7 @@
 // functions.
 //
 // Since SPI is used to trigger steps and set the direction, connecting the
-// driver's STEP and DIR pins is optional for this example.  However, note that
+// driver's STEP and DIR pins are not needed for this example.  Note that
 // using SPI control adds some overhead compared to using the STEP and DIR pins.
 // In addition, since the library caches SPI register values, SPI control is
 // more likely to re-enable the driver with the wrong settings (e.g. current
@@ -49,7 +49,8 @@ void setup()
   sd.setDecayMode(HPSDDecayMode::AutoMixed);
 
   // Set the current limit. You should change the number here to an appropriate
-  // value for your particular system.
+  // value for your particular system.  If you are using a 36v8 board, call
+  // setCurrentMilliamps36v8 instead.
   sd.setCurrentMilliamps36v4(1000);
 
   // Set the number of microsteps that correspond to one full step.

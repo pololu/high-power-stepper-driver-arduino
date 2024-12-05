@@ -26,6 +26,7 @@ getDirection	KEYWORD2
 step	KEYWORD2
 setStepMode	KEYWORD2
 setCurrentMilliamps36v4	KEYWORD2
+setCurrentMilliamps36v8	KEYWORD2
 setDecayMode	KEYWORD2
 readStatus	KEYWORD2
 clearStatus	KEYWORD2

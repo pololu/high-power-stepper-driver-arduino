@@ -1,14 +1,13 @@
 # High-Power Stepper Motor Driver library for Arduino
 
-Version: 1.0.0<br/>
-Release date: 2019-06-04<br/>
 [www.pololu.com](https://www.pololu.com/)
 
 ## Summary
 
-This is a library for the Arduino IDE that helps interface with a [Pololu
-High-Power Stepper Motor Driver 36v4][hpsd-36v4].  It uses the [Arduino
-SPI][spi] library to communicate with the SPI interface (SCS, SCLK, SDATI, and
+This is a library for the Arduino IDE that helps interface with a
+[Pololu High-Power Stepper Motor Driver 36v4][hpsd-36v4] or
+[Pololu High-Power Stepper Motor Driver 36v8][hpsd-36v8].  It uses the
+[Arduino SPI][spi] library to communicate with the SPI interface (SCS, SCLK, SDATI, and
 SDATO) of the driver.
 
 ## Supported platforms
@@ -87,6 +86,7 @@ HighPowerStepperDriver class reference.
 
 ## Version history
 
+* 1.1.0 (2024-12-06): Added support for the [Pololu High-Power Stepper Motor Driver 36v8][hpsd-36v8].
 * 1.0.0 (2019-06-04): Original release.
 
 [a-star]: https://www.pololu.com/a-star
@@ -95,4 +95,5 @@ HighPowerStepperDriver class reference.
 [doc]: https://pololu.github.io/high-power-stepper-driver-arduino/
 [github]: https://github.com/pololu/high-power-stepper-driver-arduino/releases
 [hpsd-36v4]: https://www.pololu.com/product/3730
+[hpsd-36v8]: https://www.pololu.com/product/3731
 [spi]: http://www.arduino.cc/en/Reference/SPI

@@ -48,7 +48,8 @@ void setup()
   sd.setDecayMode(HPSDDecayMode::AutoMixed);
 
   // Set the current limit. You should change the number here to an appropriate
-  // value for your particular system.
+  // value for your particular system.  If you are using a 36v8 board, call
+  // setCurrentMilliamps36v8 instead.
   sd.setCurrentMilliamps36v4(1000);
 
   // Set the number of microsteps that correspond to one full step.

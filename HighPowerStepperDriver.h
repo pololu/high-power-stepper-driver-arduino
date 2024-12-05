@@ -381,6 +381,29 @@ public:
   void setCurrentMilliamps36v4(uint16_t current)
   {
     if (current > 8000) { current = 8000; }
+    setCurrentMilliamps36v8(current);
+  }
+
+  /// Sets the current limit for a High-Power Stepper Motor Driver 36v8.
+  ///
+  /// The argument to this function should be the desired current limit in
+  /// milliamps.
+  ///
+  /// WARNING: The 36v4 can supply up to about 8 A per coil continuously;
+  /// higher currents might be sustainable for short periods, but can eventually
+  /// cause the MOSFETs to overheat, which could damage them.  See the driver's
+  /// product page for more information.
+  ///
+  /// This function allows you to set a current limit of up to 16 A (16000 mA),
+  /// but we strongly recommend against using a current limit higher than 8 A
+  /// (8000 mA) unless you are careful to monitor the MOSFETs' temperatures
+  /// and/or restrict how long the driver uses the higher current limit.
+  ///
+  /// This function takes care of setting appropriate values for ISGAIN and
+  /// TORQUE to get the desired current limit.
+  void setCurrentMilliamps36v8(uint16_t current)
+  {
+    if (current > 16000) { current = 16000; }
 
     // From the DRV8711 datasheet, section 7.3.4, equation 2:
     //
@@ -390,11 +413,12 @@ public:
     //
     //   TORQUE = (256 * ISGAIN * Risense * Ifs) / 2.75 V
     //
-    // The 36v4 has an Risense of 30 milliohms, and "current" is in milliamps,
-    // so:
+    // The 36v4 and 36v8 have an Risense of 30 milliohms, and "current" is
+    // in milliamps, so:
     //
     //   TORQUE = (256 * ISGAIN * (30/1000) ohms * (current/1000) A) / 2.75 V
     //          = (7680 * ISGAIN * current) / 2750000
+    //          = (768 * (ISGAIN/40) * current) / 6875
     //
     // We want to pick the highest gain (5, 10, 20, or 40) that will not
     // overflow TORQUE (8 bits, 0xFF max), so we start with a gain of 40 and
