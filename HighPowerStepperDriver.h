@@ -381,7 +381,10 @@ public:
   void setCurrentMilliamps36v4(uint16_t current)
   {
     if (current > 8000) { current = 8000; }
-    setCurrentMilliamps36v8(current);
+
+    // The 36v4 is just like the 36v8, except Risense is twice as large, so
+    // TORQUE/ISGAIN has to be doubled.
+    setCurrentMilliamps36v8(current * 2);
   }
 
   /// Sets the current limit for a High-Power Stepper Motor Driver 36v8.
@@ -389,7 +392,7 @@ public:
   /// The argument to this function should be the desired current limit in
   /// milliamps.
   ///
-  /// WARNING: The 36v4 can supply up to about 8 A per coil continuously;
+  /// WARNING: The 36v8 can supply up to about 8 A per coil continuously;
   /// higher currents might be sustainable for short periods, but can eventually
   /// cause the MOSFETs to overheat, which could damage them.  See the driver's
   /// product page for more information.
@@ -413,18 +416,18 @@ public:
     //
     //   TORQUE = (256 * ISGAIN * Risense * Ifs) / 2.75 V
     //
-    // The 36v4 and 36v8 have an Risense of 30 milliohms, and "current" is
+    // The 36v8 has an Risense of 15 milliohms, and "current" is
     // in milliamps, so:
     //
-    //   TORQUE = (256 * ISGAIN * (30/1000) ohms * (current/1000) A) / 2.75 V
-    //          = (7680 * ISGAIN * current) / 2750000
-    //          = (768 * (ISGAIN/40) * current) / 6875
+    //   TORQUE = (256 * ISGAIN * (15/1000) ohms * (current/1000) A) / 2.75 V
+    //          = (3840 * ISGAIN * current) / 2750000
+    //          = (384 * (ISGAIN/40) * current) / 6875
     //
     // We want to pick the highest gain (5, 10, 20, or 40) that will not
     // overflow TORQUE (8 bits, 0xFF max), so we start with a gain of 40 and
     // calculate the TORQUE value needed.
     uint8_t isgainBits = 0b11;
-    uint16_t torqueBits = ((uint32_t)768  * current) / 6875;
+    uint16_t torqueBits = ((uint32_t)384 * current) / 6875;
 
     // Halve the gain and TORQUE until the TORQUE value fits in 8 bits.
     while (torqueBits > 0xFF)

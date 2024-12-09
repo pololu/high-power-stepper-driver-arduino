@@ -86,6 +86,8 @@ HighPowerStepperDriver class reference.
 
 ## Version history
 
+* 1.1.1 (2024-12-09): Fix the `setCurrentMilliamps36v8` function, which was
+  setting current limits 2x higher than intended.
 * 1.1.0 (2024-12-06): Added support for the [Pololu High-Power Stepper Motor Driver 36v8][hpsd-36v8].
 * 1.0.0 (2019-06-04): Original release.
 
