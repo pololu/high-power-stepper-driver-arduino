@@ -7,7 +7,7 @@
 // Before using this example, be sure to change the setCurrentMilliamps36v4 line
 // to have an appropriate current limit for your system.  Also, see this
 // library's documentation for information about how to connect the driver:
-//   http://pololu.github.io/high-power-stepper-driver
+//   https://pololu.github.io/high-power-stepper-driver-arduino/
 
 #include <SPI.h>
 #include <HighPowerStepperDriver.h>
